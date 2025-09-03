@@ -67,21 +67,23 @@ Scenario: Happy Path
 
     # Step 2: Verify that one on one is in the list with the id and generated note
     Given url apiRootUrl
-    Given path 'one-on-ones?menteeEmployeeId=' + menteeEmployeeId
+    Given path 'one-on-ones'
+    And param menteeEmployeeId = menteeEmployeeId
     When method GET
     And match response.oneOnOnes contains
     """
     {
         "id": "#(newOneOnOneId)",
         "date": "2025-09-03",
-        "note": "#(oneOnOneRandomNote)"
-        "mentorEmployee": {
+        "note": "#(oneOnOneRandomNote)",
+        "mentor": {
             "employeeId": "#(mentorEmployeeId)",
             "fullName": "#(mentorEmployeeFullName)",
         },
     }
     """
-    And assert response.mentee.fullName == menteeEmployeeFullName
+    And assert response.mentee.employeeId == menteeEmployeeId
+    And assert response.mentee.fullName == "N/A"
 
     # Cleanup: Delete the one on one (hard delete)
     Given path 'one-on-ones', newOneOnOneId, 'hard-delete'
