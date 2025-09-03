@@ -1,0 +1,71 @@
+[
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/auth/login",
+      "body": {
+        "login": "first-tenant-login-with-all-permissions"
+      }
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": "{\"accessToken\": { \"value\": \"eyJuYW1lSWRlbnRpZmllciI6Im1haWxAbWFpbC5ydSIsImNvcnBvcmF0ZUVtYWlsIjoibWFpbEBtYWlsLnJ1IiwidGVuYW50SWQiOiIxIiwiZW1wbG95ZWVJZCI6IjIiLCJwZXJtaXNzaW9ucyI6WyJBVVRPX1RFU1RTX09OTFlfSXNPbmVPbk9uZXNIYXJkRGVsZXRlQWxsb3dlZCIsIkNhbk1hbmFnZU9uZU9uT25lcyIsIkNhblZpZXdPbmVPbk9uZXMiXX0=\" }}",
+      "headers": {
+        "Content-Type": [
+          "application/json"
+        ]
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/auth/login",
+      "body": {
+        "login": "second-tenant-login-with-all-permissions"
+      }
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": "{\"accessToken\": { \"value\": \"eyJuYW1lSWRlbnRpZmllciI6Im1haWwyQG1haWwucnUiLCJjb3Jwb3JhdGVFbWFpbCI6Im1haWwyQG1haWwucnUiLCJ0ZW5hbnRJZCI6IjIiLCJlbXBsb3llZUlkIjoiMyIsInBlcm1pc3Npb25zIjpbIkFVVE9fVEVTVFNfT05MWV9Jc09uZU9uT25lc0hhcmREZWxldGVBbGxvd2VkIiwiQ2FuTWFuYWdlT25lT25PbmVzIiwiQ2FuVmlld09uZU9uT25lcyJdfQ==\" }}",
+      "headers": {
+        "Content-Type": [
+          "application/json"
+        ]
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/auth/login",
+      "body": {
+        "login": "first-tenant-login-without-permissions"
+      }
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": "{\"accessToken\": { \"value\": \"eyJuYW1lSWRlbnRpZmllciI6Im1haWwwQG1haWwucnUiLCJjb3Jwb3JhdGVFbWFpbCI6Im1haWwwQG1haWwucnUiLCJ0ZW5hbnRJZCI6IjEiLCJlbXBsb3llZUlkIjoiNzc3IiwicGVybWlzc2lvbnMiOltdfQ==\" }}",
+      "headers": {
+        "Content-Type": [
+          "application/json"
+        ]
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/internal/employees"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": "[{\"employeeId\":2,\"fullName\":\"Mega Mentor\"},{\"employeeId\":3,\"fullName\":\"Mega Mentee\"},{\"employeeId\":777,\"fullName\":\"Mr. No Permissions\"}]",
+      "headers": {
+        "Content-Type": [
+          "application/json"
+        ]
+      }
+    }
+  }
+]
