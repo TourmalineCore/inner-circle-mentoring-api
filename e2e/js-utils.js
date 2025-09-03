@@ -27,5 +27,13 @@ function fn() {
 
       return System.getenv(variable);
     },
+
+    getDecodedToken: function (token) {
+      var Bytes = Java.type('java.util.Base64');
+      var decodedBytes = Bytes.getDecoder().decode(token);
+      var decodedString = new java.lang.String(decodedBytes);
+      
+      return JSON.parse(decodedString);
+    }
   }
 }

@@ -56,7 +56,7 @@
   {
     "httpRequest": {
       "method": "GET",
-      "path": "/internal/employees"
+      "path": "/internal/get-employees"
     },
     "httpResponse": {
       "statusCode": 200,

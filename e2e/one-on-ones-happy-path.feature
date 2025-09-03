@@ -27,26 +27,22 @@ Scenario: Happy Path
     Then status 200
 
     * def accessToken = karate.toMap(response.accessToken.value)
+    * def decodedAccessToken = jsUtils().getDecodedToken(accessToken)
 
     * configure headers = jsUtils().getAuthHeaders(accessToken)
-
     
     # Step 0: Get all employees and pick any of them as a mentee
     Given url employeesApiRootUrl
-    # TODO: fix path and response, get rid of tenantId from query args
-    Given path 'internal/employees'
+    Given path 'internal/get-employees'
     When method GET
 
-    # TODO: replace hardcoded mentor employee id from access token
-    # TODO: find mentor by emp id to have their full name
-    * def mentorEmployeeId = 2
-    * def mentorEmployeeFullName = "Mega Mentor"
-
-    # TODO: fix path and response
     # We don't care that much who it is, let it be the first one
     * def menteeEmployeeId = response[0].employeeId
     * def menteeEmployeeFullName = response[0].fullName
 
+    * def mentorEmployeeId = Number(decodedAccessToken.employeeId)
+    * def mentorEmployeeFullName = response.find(x => x.employeeId == mentorEmployeeId).fullName
+    
     # Step 1: Create a new one on one
     * def oneOnOneRandomNote = '[API-E2E]-Test-one-on-one-' + Math.random()
     
