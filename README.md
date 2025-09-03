@@ -14,7 +14,7 @@ docker compose --profile MockForDevelopment up --build
 
 Run the database using docker compose executing the following script (don't close the terminal unless you want to stop the containers)
 ```bash
-docker compose --profile DbOnly --build
+docker compose --profile DbOnly up --build
 ```
 >Note: `--build` gurantees that we run the latest code after re-applying the script
 
@@ -48,7 +48,7 @@ docker compose --profile MockForDevelopment up --build
 
 Then execute following command inside of the dev-container
 ```bash
-API_ROOT_URL=http://host.docker.internal:5501 java -jar /karate.jar .
+API_ROOT_URL=http://host.docker.internal:5502 java -jar /karate.jar .
 ```
 
 ### Run Karate against Api, Db, and MockServer in Docker Compose
