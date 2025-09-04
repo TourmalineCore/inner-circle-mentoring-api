@@ -28,9 +28,9 @@ function fn() {
       return System.getenv(variable);
     },
 
-    getDecodedToken: function (token) {
+    getDecodedToken: function (tokenValue) {
       var Bytes = Java.type('java.util.Base64');
-      var decodedBytes = Bytes.getDecoder().decode(token);
+      var decodedBytes = Bytes.getDecoder().decode(tokenValue);
       var decodedString = new java.lang.String(decodedBytes);
       
       return JSON.parse(decodedString);
