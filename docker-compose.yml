@@ -1,0 +1,99 @@
+services:
+
+  inner-circle-mentoring-api-db:
+    image: postgres:14
+    container_name: inner-circle-mentoring-api-db
+    profiles:
+      - DbOnly
+      - MockForDevelopment
+      - MockForTests
+      - MockForPullRequest
+    environment:
+      POSTGRES_DB: inner-circle-mentoring-api-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 7502:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - inner-circle-mentoring-api-network
+
+  inner-circle-mentoring-api:
+    container_name: inner-circle-mentoring-api
+    profiles:
+      - MockForTests
+      - MockForPullRequest
+    depends_on:
+      inner-circle-mentoring-api-db:
+        condition: service_healthy
+      inner-circle-mentoring-api-mock-server:
+        condition: service_started
+    build:
+      dockerfile: ./Api/Dockerfile
+      context: .
+      args:
+        EXCLUDE_UNIT_TESTS_FROM_BUILD: "true"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=MockForPullRequest
+    ports:
+      - 6502:80
+    networks:
+      - inner-circle-mentoring-api-network
+
+  inner-circle-mentoring-api-mock-server:
+    container_name: 'inner-circle-mentoring-api-mock-server'
+    profiles:
+      - MockForDevelopment
+      - MockForTests
+      - MockForPullRequest
+    image: mockserver/mockserver:5.15.0
+    command: -logLevel INFO
+    ports:
+      - 8502:1080
+    volumes:
+      - ./e2e/mock-server-initialization.json:/config/mock-server-initialization.json
+    environment:
+      SERVER_PORT: 1080
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/mock-server-initialization.json
+    networks:
+      - inner-circle-mentoring-api-network
+
+  inner-circle-mentoring-api-karate-tests:
+    container_name: 'inner-circle-mentoring-api-karate-tests'
+    profiles:
+      - MockForPullRequest
+    build:
+      dockerfile: ./e2e/KarateDockerfile
+      context: .
+    # service_started is not what we need, we need deps to be healthy and ready, this needs to be implemented in api and mock-server first 
+    depends_on:
+      inner-circle-mentoring-api:
+        condition: service_started
+      inner-circle-mentoring-api-mock-server:
+        condition: service_started
+    # restart twice in case of not ready db or network failures
+    restart: on-failure:2
+    command: ["karate", "/karate"]
+    volumes:
+      - .:/karate
+    environment:
+      AUTH_FIRST_TENANT_LOGIN_WITH_ALL_PERMISSIONS: "first-tenant-login-with-all-permissions"
+      AUTH_FIRST_TENANT_PASSWORD_WITH_ALL_PERMISSIONS: "first-tenant-password-with-all-permissions"
+      AUTH_SECOND_TENANT_LOGIN_WITH_ALL_PERMISSIONS: "second-tenant-login-with-all-permissions"
+      AUTH_SECOND_TENANT_PASSWORD_WITH_ALL_PERMISSIONS: "second-tenant-password-with-all-permissions"
+      AUTH_LOGIN_WITHOUT_PERMISSIONS: "first-tenant-login-without-permissions"
+      AUTH_PASSWORD_WITHOUT_PERMISSIONS: "first-tenant-password-without-permissions"
+      # here the port is 1080 because it needs to be an internal port, not an external which is 8502 in this case
+      AUTH_API_ROOT_URL: "http://inner-circle-mentoring-api-mock-server:1080"
+      EMPLOYEES_API_ROOT_URL: "http://inner-circle-mentoring-api-mock-server:1080"
+      API_ROOT_URL: "http://inner-circle-mentoring-api"
+      SHOULD_USE_FAKE_EXTERNAL_DEPENDENCIES: "true"
+    networks:
+      - inner-circle-mentoring-api-network
+
+networks:
+  inner-circle-mentoring-api-network:

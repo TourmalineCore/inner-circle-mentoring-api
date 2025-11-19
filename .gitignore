@@ -1,0 +1,8 @@
+**/bin/*
+**/obj/*
+**/.vs/*
+**.user
+**/lib/*
+
+# karate test run reports
+target/

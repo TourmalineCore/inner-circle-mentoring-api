@@ -1,0 +1,29 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - feature/*
+
+jobs:
+  e2e-karate-tests-in-docker-compose:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run service via docker-compose and run Karate-tests
+    # Find text with 'failed' and 'passed' in logs from karate-testing container
+      run: |
+        LOGS=$(docker compose --profile MockForPullRequest up --abort-on-container-exit)
+        echo "$LOGS"
+        FAILED=$(echo "$LOGS" | grep -oP 'failed: *\K\d+')
+        PASSED=$(echo "$LOGS" | grep -oP 'passed: *\K\d+')
+        echo "Failed tests: $FAILED"
+        echo "Passed tests: $PASSED"
+        if [ "$FAILED" -gt 0 ]; then
+          echo "Failed tests found! Failing the pipeline..."
+          exit 1
+        fi
+        if [ "$PASSED" -eq 0 ]; then
+          echo "No tests passed! Failing the pipeline..."
+          exit 1
+        fi        
